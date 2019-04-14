@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <jmxConfigurator/>
+
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <if condition='isDefined("LOG_PATH")'>
+        <then>
+            <property name="LOG_FILE" value="${LOG_PATH}/cookbook.log"/>
+
+            <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+                <!-- configure filter to limit console output -->
+                <encoder>
+                    <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+                    <charset>utf8</charset>
+                </encoder>
+            </appender>
+
+            <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <encoder>
+                    <pattern>${FILE_LOG_PATTERN}</pattern>
+                </encoder>
+                <file>${LOG_FILE}</file>
+                <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                    <!-- rollover daily -->
+                    <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+                    <!-- each file should be at most 100MB, keep 30 days worth of history, but at most 10GB -->
+                    <maxFileSize>100MB</maxFileSize>
+                    <maxHistory>30</maxHistory>
+                    <totalSizeCap>10GB</totalSizeCap>
+                </rollingPolicy>
+            </appender>
+
+            <!-- configure additional appenders and loggers for specific use cases, e.g. audit log -->
+
+            <root level="INFO">
+                <appender-ref ref="CONSOLE"/>
+                <appender-ref ref="FILE"/>
+            </root>
+        </then>
+        <else>
+            <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+            <root level="INFO">
+                <appender-ref ref="CONSOLE"/>
+            </root>
+        </else>
+    </if>
+
+</configuration>
